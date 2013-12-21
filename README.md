@@ -1,0 +1,2 @@
+node-image-convert
+==================

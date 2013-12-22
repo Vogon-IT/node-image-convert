@@ -3,7 +3,8 @@ var fs = require('fs'),
   im = require('imagemagick');
 
 var srcFolder = "tiff-folder/",
-  dstFolder = "jpeg-folder/";
+  dstFolder = "jpeg-folder/",
+  keepSrcImg = true; // keep or remove the src image after convert
 
 fs.exists(srcFolder, function(exists) {
   if (!exists) return console.log('ERROR! srcFolder not found.');
@@ -32,7 +33,16 @@ fs.watch(srcFolder, function(event, filename) {
       // https://github.com/rsms/node-imagemagick
       im.convert([srcImg, dstImg],
         function(err, stdout) {
-          if (err) util.puts(err);
+          if (!err) {
+            // remove the src file if keepSrcImg is false
+            if (!keepSrcImg) {
+              fs.unlink(srcImg, function(err) {
+                if (err) util.puts(err);
+              });
+            }
+          } else {
+            util.puts(err); // output convert error
+          }
         });
     }
   });
